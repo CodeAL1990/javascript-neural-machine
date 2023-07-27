@@ -62,3 +62,30 @@ To fix it, in update, we set a condition when speed is not equal to 0, set flip 
 Now your car should move like car(sorta), and it cannot rotate in place anymore
 Comment/remove your debug consoles once your controls are what you want
 We can refactor the code for movement inside the update method by moving all the code inside Car update into a PRIVATE move custom method, and just call PRIVATE move method inside update
+Now for the road, create road.js, and link it to html
+In road.js, create Road class, passing in x to center road on x, a width for a set width for the road, and laneCount assigned to the value of 3
+Convert them to class properties
+Set left and right in Road to be at x and half of width(Remember going left is negative while going right is positive when along the x axis in a computer)
+For y axis, you want it to be infinite, so set infinity to a very large number(i.e a million), and set top and bottom to infinity(Again, upwards of y is negative, while downwards is positive)
+Create custom draw method for Road, passing in ctx
+Inside draw method, set lineWidth of ctx to 5, and strokeStyle to white
+Begin drawing the line by calling beginPath on ctx, and call moveTo from left to top
+Then, call lineTo from left to bottom, and call stroke
+The above drawing will draw a vertical line on the left side of the canvas
+Create another set and draw a vertical line on the right side of the canvas
+Back to main js, above your car variable, create road variable, and set it to a new instance of Road, passing in the required references (x, width, and laneCount)
+x will be half of canvas width, width will be canvas width(laneCount will be touched upon later)
+Inside animate, call draw on road above car draw and you should be able to see the white line with 5px which you have defined previously
+To create a margin on the sides of the road, you can shrink the width of the road by multiplying the width reference of road by let's say 0.9
+For laneCount, back to Road draw, create a for loop, using less than or equal to laneCount as the limit
+We will employ \*\*linear interpolation (THIS HAS NO IN-BUILT JAVASCRIPT SO YOU NEED A CUSTOM METHOD FOR IT)
+\*\* Linear interpolation helps to find an unknown point between two coordinates(x1, y1, and x2, y2), because there is a constant slope between them and we can find an unknown x,y between the 2 sets of known x,y
+In this case, we are linear interpolating between the left and right which we have defined, and between i and laneCount(0 and 3) and assign them all to x
+In your code for left and right lines, you can replace left in moveTo and lineTo to x, and remove the code for right lines because the for loop will generate up to 3 lanes for us now
+Move the line drawing inside the for loop to loop the code
+\*\* Create the custom lerp function inside utils.js and link it to html
+You should see 3 lanes now for your road
+To create a more realistic road, we will create line dashes instead of just straight vertical lines in the middle
+Inside the for loop, check if i is more than 0 AND i is less than laneCount, call setLineDash on ctx at 20,20 (20px line then 20px break loop for the middle lines)
+Else, call setLineDash on ctx at an empty array(since the left border is at 0 and right border is at laneCount, they will remain straight lines)
+You can change the value of your laneCount in Road to generate more lanes (but it will be limited by the canvas width)
