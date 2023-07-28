@@ -69,7 +69,7 @@ Set left and right in Road to be at x and half of width(Remember going left is n
 For y axis, you want it to be infinite, so set infinity to a very large number(i.e a million), and set top and bottom to infinity(Again, upwards of y is negative, while downwards is positive)
 Create custom draw method for Road, passing in ctx
 Inside draw method, set lineWidth of ctx to 5, and strokeStyle to white
-Begin drawing the line by calling beginPath on ctx, and call moveTo from left to top
+Begin drawing the line by calling beginPath on ctx, and call moveTo from left, top coordinate
 Then, call lineTo from left to bottom, and call stroke
 The above drawing will draw a vertical line on the left side of the canvas
 Create another set and draw a vertical line on the right side of the canvas
@@ -89,3 +89,25 @@ To create a more realistic road, we will create line dashes instead of just stra
 Inside the for loop, check if i is more than 0 AND i is less than laneCount, call setLineDash on ctx at 20,20 (20px line then 20px break loop for the middle lines)
 Else, call setLineDash on ctx at an empty array(since the left border is at 0 and right border is at laneCount, they will remain straight lines)
 You can change the value of your laneCount in Road to generate more lanes (but it will be limited by the canvas width)
+For every lane, it will be useful to determine where the center of a lane in where we will be spawning cars in
+To do that, add a custom method inside Road called getLaneCenter, passing in laneIndex
+Inside getLaneCenter, set laneWidth variable to width divided by laneCount(this will help you get the full width of each lane)
+Then, return left plus half of laneWidth(middle of each lane) multiplied by laneIndex times laneWidth(the position of each lane)
+To test it, back in main js, in your car variable, instead of a hardcoded 100, pass in road's getLaneCenter with the laneIndex reference(0 to 2 if 3 lanes, 0 to 3 if 4 lanes etc)
+Whatever value you put as laneIndex reference should spawn the car at that lane when you refresh
+However, if let's say you reduce the number of lanes, to let's say 2 and pass in 3 in getLaneCenter reference, javascript will still spawn it at lane 4 outside the canvas(you can keep moving left using controls to make the car appear visually from outside the canvas)
+To make sure that your car always spawns initially within the canvas, for the laneIndex times laneWidth portion, you can wrap laneIndex in a Math.min method, and pass in a second argument of laneCount minus 1 so that your car will always spawn at the rightmost lane of the canvas even if the value passed in your getLaneCenter reference is larger than the number of lanes
+You can test it by passing let's say an overly large number such as 100 in your getLaneCenter in car variable, and your car should still spawn in the rightmost lane of your road even though you do not have 100 lanes
+Currently, you can drive in and out of the canvas and we want to limit the car within the road
+In Road, set borders property to an array
+Inside the array, you will have an array with topLeft, bottomLeft array items, and array with topRight, bottomRight array items(the reason for doing this is for easy expansion of code for let's say if you want to add additional roads with different angles)
+Above borders property, set topLeft to an object with x property pointing to left, and y pointing to the top
+Do the same for topRight, bottomLeft, and bottomRight
+Inside console, you can type road.borders to see the positions of your borders
+Since you have added borders, to make your code more consistent, inside your for loop, change initial i to 1, the limit to laneCount -1, and remove the if condition, leaving only the setLineDash of 20,20 intact(Reason for doing this is we are refactoring the code to use the borders property now and this portion of the code will only draw lineDashes at each lane and the code for borders will be separated)
+After changing the above, outside the for loop in Road draw, call setLineDash on context with an empty array at the end of draw, and use forEach method on borders array
+In the forEach method, for each border, call beginPath on ctx, call moveTo from index 0 border of x, index 0 border of y coordinates, then call lineTo to index 1 border of x, index 1 border of y coordinates, and call stroke on ctx
+The forEach method will be in charge of drawing borders of subsequent roads if you choose to add more roads
+A way to have a 'camera' fixed on your car with a bird's eye view is to wrap road draw and car draw calls with save and restore on ctx in animate, then at the start of the save restore, call translate on ctx, passing in position 0,-car.y coordinate
+You should see your car giving an illusion of moving because your road is scrolling while your 'camera' is fixed on the car
+To make the car more visible, you can adjust it's y position in translate, by adding -car.y with canvas height and a value of 0 to 1(0.5 will be middle of canvas for example)
