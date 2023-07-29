@@ -111,3 +111,28 @@ The forEach method will be in charge of drawing borders of subsequent roads if y
 A way to have a 'camera' fixed on your car with a bird's eye view is to wrap road draw and car draw calls with save and restore on ctx in animate, then at the start of the save restore, call translate on ctx, passing in position 0,-car.y coordinate
 You should see your car giving an illusion of moving because your road is scrolling while your 'camera' is fixed on the car
 To make the car more visible, you can adjust it's y position in translate, by adding -car.y with canvas height and a value of 0 to 1(0.5 will be middle of canvas for example)
+Now, create a new js file called sensor.js and link it in html
+In sensor js, create class Sensor, passing in car as reference(sensor will be attached to the car)
+Convert car to class property in Sensor
+Set rayCount to 3
+Set rayLength to 100
+Set raySpread to Math.PI divided by 4(45 degrees) --> Keep in mind Math.PI times 2 is a full circle
+Set rays to an empty array
+Create custom update method for Sensor
+Inside Sensor update, set rays to empty array again
+Then, create a for loop with a limit of i less than rayCount
+Inside the loop, create rayAngle variable and assign it custom utils function lerp(linear interpolation), passing in raySpread divided by 2, negative raySpread divided by 2, and i divided by rayCount minus 1(because your limit is less than)
+Then, inside the same for loop, set start to an object with coordinate x pointing to car's x, and y pointing to car's y
+Set end to to an object with coordinate x pointing to car's x minus Math.sin of rayAngle multiplied by rayLength
+And coordinate y to y pointing to car's y minus Math.cos of rayAngle multiplied by rayLength
+After defining the above, use push method on rays array, passing in an array of start and end as array items(just like you did for borders array)
+Create a custom draw method, passing in ctx and create a for loop with a limit of i less than rayCount
+Inside that loop, you will draw these raylines by calling beginPath on ctx first as always
+Define lineWidth of ctx to 2 and a strokeStyle of yellow
+Then, call moveTo on ctx with coordinates of x's rays array at the 0 index of i index(oof), and y's rays array at the 0 index of i index(0 index is start)
+Then, call lineTo(where the end coordinate of the line should be) on ctx with similar coordinates BUT at 1 index of i index(end variable)
+Once you have defined moveTo and lineTo with their coordinates, stroke ctx to draw them
+With the above done, we will need to bring the sensor class to your car, so set sensor in Car with an instance of Sensor, passing in the car reference(since you are already inside Car you can just pass in this keyword)
+Then, in Car update, call sensor's update
+In Car draw, call sensor's draw, passing in its reference
+After all that, you should see 3 yellow lines protruding from your car object on your browser(cuz rayCount is 3)
