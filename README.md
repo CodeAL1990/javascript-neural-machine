@@ -136,3 +136,43 @@ With the above done, we will need to bring the sensor class to your car, so set 
 Then, in Car update, call sensor's update
 In Car draw, call sensor's draw, passing in its reference
 After all that, you should see 3 yellow lines protruding from your car object on your browser(cuz rayCount is 3)
+Currently, the sensors are static (they face the same direction regardless of how your car moves)
+We want the sensors to move according to where the front of the car faces
+To do that, in Sensor update's rayAngle variable, add the car's angle to lerp and it should work
+You can increase rayCount value and it will simulate a car's front flashlights if you increase it to a high enough value
+If you change rayCount to 1, there is no ray because your lerp function has rayCount - 1 in its t parameter which will result to 0
+To fix this, you can replace that argument to a ternary operator where if rayCount is exactly 1, set it to 0.5 instead(centerpoint of the ray spread), and if not, set it to the same value as previously(i / this.rayCount - 1) --> This is just to solve this edge case
+As usual, we want each method to do one job only (one principle methology), so each custom method should be PRIVATE here
+Cut the code in Sensor update and move it to PRIVATE castRays method, then call it in the update
+We want our sensors to be able to detect the borders
+To do that, we need to pass in the road's borders array into car update in animate
+Then, pass roadBorders reference to car update, and the update call on sensor inside of it
+Back to sensor js, pass roadBorders reference to its update method as well
+As such, roadBorders reference will be linked from the rays to the borders array(though it does nothing as of now)
+In Sensor, add readings property and assign it an empty array
+In Sensor update, initialize readings to an empty array
+Then, add a for loop with a limit of i less than rays array length, calling a push method on readings array, pushing in a PRIVATE getReading method(not yet made) with a i index rays, and roadBorders reference
+With the above done, we can create a PRIVATE custom getReading inside Sensor to introduce the logic between rays and borders interaction
+Pass in ray, and roadBorders reference to PRIVATE getReading
+The rays will detect when it touches objects you deem to be obstacles, such as borders or other cars(which will be added later)
+The rays will find the coordinates of all the obstacles they touch, and they will only keep the points of intersection that are closest to the point of origin(in this case, the car you are 'driving') --> this is how sensors work
+In PRIVATE getReading, set touches variable to an empty array
+Then, set a for loop with a limit of i less than roadBorders length, and inside the loop, set touch to a custom getIntersection method(not yet made), passing in ray at index 0, ray at index 1, roadBorders at index i and 0, roadBorders at index i and 1
+After the above, and still inside the for loop, set a condition where if touch is true, push touch to touches array
+After the for loop, if there are absolutely no touches(touches array length is 0), return null
+Else, set offets to a map call on touches, and for each element, get its offset(map method goes through all available offsets in touch variable and return each as an array)
+\*\* Note that the arguments in getIntersection are essentially coordinates(x, y, offsets)
+Out of all these arrays being returned using map, we only want the closest/minimum value
+So, we set minOffset to a Math.min of the spread of offsets(since map returns each offset as an array)
+Once we get them, we return the touches array, calling find on it, and for each element, only find the offset that is exactly minOffset
+With the logic above done, we will want to draw the readings out
+Before that you will need the getIntersection method fleshed out(because author didn't really include it)
+getIntersection method, just like lerp, will be in your utils.js, as the logic will be required(It's called segment intersection and you can get more in-dept explanations on his channel(probably))
+All the offsets thingy at the front refers to segment intersection
+\*\*The basic explanation of segment intersection is to use linear interpolation of two intersecting lines and find their points of intersection
+Now, back to Sensor draw, add end variable to the start of the for loop, and set it to rays array at i index and 1 index
+Then, if readings at i index is true, set end to readings at i index
+In the lineTo call on ctx in Sensor draw, replace the rays array at i index and 1 index to end variable(since you have defined end variable as such)
+After the above, duplicate the yellow line code and change it to black for the second set
+Then, instead of drawing at the start of the rays like the yellow lines, draw it at the end of the rays (rays[i][1]) instead
+The above, along with the getIntersection method, will make it so that when your rays touch the borders(and later when other cars are added), the part where the rays touch them will turn black
