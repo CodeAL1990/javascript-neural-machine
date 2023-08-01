@@ -176,3 +176,31 @@ In the lineTo call on ctx in Sensor draw, replace the rays array at i index and 
 After the above, duplicate the yellow line code and change it to black for the second set
 Then, instead of drawing at the start of the rays like the yellow lines, draw it at the end of the rays (rays[i][1]) instead
 The above, along with the getIntersection method, will make it so that when your rays touch the borders(and later when other cars are added), the part where the rays touch them will turn black
+Currently, we are drawing the car using simple line draws, and in doing so, we are unable to deterministically detect the coordinates of the car's corners/anglepoints, which will be required to detect collisions(i.e when a car crashes on obstacles)
+As such, we will need a custom method to find out the car's corners' coordinates on the canvas
+To do this, we will have a new PRIVATE createPolygon method and in it, we will write the logic on how to detect where the corners of the car are(this method can also be used for other shapes, hence the Polygon name)
+Go to car.js and create a PRIVATE createPolygon method, right below car update(this method will be called in update)
+Inside createPolygon, initialize points to an empty array(this will contain where all points of the car/shape are at)
+For a rectangle, like the current car, the coordinates of the corners by going from the mid point of the rectangle, and drawing a line towards the corners, forming a triangle
+This line's value can be found using the hypotenuse method of the width and height divided by 2
+The angle of the triangle will require the use of the arc tangent method(which is the width divided by height) --> You can use Math.atan2 and pass in width and height
+Once you have the calculations above stored in 2 different variables(in this case, I use hypo for the Math.hypot calc, and hypoAngle for the the angle), use push method on points array, passing in an object with x,y properties
+x will be x minus Math.sin of angle minus hypoAngle, then multiply by hypo
+y will be y minus Math.cos of angle minus hypoAngle, then multiply by hypo
+The above push is the calculation for the top right corner of the car
+We will do it for top left now, with the same calculations, but with plus hypoAngle for both x,y instead
+For bottom right and left corners, we will need to add Math.PI to their Math.sin/Math.cos calculations, to add a 180 degree spin(basically the top right and left calculations but in reverse)
+Then, return points array
+With createPolygon done, in car update, set polygon to a createPolygon call after we move the car(so after #move call)
+Now, we can use createPolygon to draw the car instead, so in car draw, you can remove your existing save and restore method and all the code between it where we use multiple methods to manually draw the car out
+To draw the polygon, call beginPath on ctx like before
+Then, call moveTo on ctx at index 0 of polygon's x, and index 0 of polygon's y coordinates
+After that, create a for loop with i at 1(because moveTo is already index 0), and a limit of i less than polygon's legnth
+Inside the for loop, call lineTo on ctx and pass in i index of polygon of x and of y(this will loop through all available data in the points array stored inside polygon variable)
+Then, call fill on ctx to draw the car which is 'polygonified'
+Although there is visually no change, you can now go to your createPolygon method and tweak the values inside the calculations of your x,y coordinates to change the shape of your car object
+With the car drawn out using math, we can now calculate when a collision happens between the car and obstacles using math as well
+In Car, set damaged property to false
+In car update, after polygon, set damaged to a PRIVATE assessDamage call(not yet made), and pass in roadBorders
+Now, create PRIVATE assessDamage method, passing in roadBorders reference
+Inside the above method, create a for loop, with a limit of i less than roadBorders length, and if po
