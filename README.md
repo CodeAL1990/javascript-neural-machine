@@ -221,3 +221,5 @@ To test the code, back to car js, in car draw, set a condition if damaged is tru
 Else, call fillStyle on ctx to black
 Whenever your car touches the border, it should change color to gray to indicate that it is 'damaged' and that the polysIntersection function is working with car as poly1 and border a poly2
 \*\* Note that when your car is slightly touching the border, it will not turn gray and this is because the line itself is very thin that is calculated by math and has no thickness, but the border we drew is manually drawn using javascript and we added lineWidth to it so the 'real' intersection does not happen until the car truly intersect pass the border which visually makes more sense(probably)
+In car update, set a condition if damaged is false(!damaged), move the code from #move till damaged inside the condition --> so if car is not damaged, allow it to move and such
+Now, your car should stop moving when it turns gray(gets damaged)
