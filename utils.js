@@ -25,3 +25,23 @@ function getIntersection(A, B, C, D) {
 
   return null;
 }
+
+//Checking intersection between two polygons using segment intersection
+function polysIntersect(poly1, poly2) {
+  for (let i = 0; i < poly1.length; i++) {
+    for (let j = 0; j < poly2.length; j++) {
+      // touch compares all segments of poly1 to poly2
+      const touch = getIntersection(
+        poly1[i],
+        // i + 1 index with the modular helps to connect the last point of poly to the starting point of poly
+        poly1[(i + 1) % poly1.length],
+        poly2[j],
+        poly2[(j + 1) % poly2.length]
+      );
+      if (touch) {
+        return true;
+      }
+    }
+  }
+  return false;
+}

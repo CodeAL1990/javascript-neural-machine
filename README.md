@@ -203,4 +203,21 @@ With the car drawn out using math, we can now calculate when a collision happens
 In Car, set damaged property to false
 In car update, after polygon, set damaged to a PRIVATE assessDamage call(not yet made), and pass in roadBorders
 Now, create PRIVATE assessDamage method, passing in roadBorders reference
-Inside the above method, create a for loop, with a limit of i less than roadBorders length, and if po
+Inside the above method, create a for loop, with a limit of i less than roadBorders length
+Inside the for loop, if polysIntersect method(not yet made) with polygon, and i index of roadBorders references is true, return true
+After the for loop return false -> if the code reaches here, that means there is no intersection between polygons
+You will now create a polysIntersect custom method in utils js, using segment intersection logic
+In your utils js, create polysIntersect method and pass in poly1 and poly2 references
+Then, create a for loop, with a limit of i less than poly1 length
+Inside that for loop, create a second for loop with a limit of j less than poly2 length
+\*\*\ The above is a javscript method of comparing between 2 values/points simultaneously as the loop runs
+Inside that second for loop, create touch variable, and assign the getIntersection method to it
+You will need 4 arguments for getIntersection which are i index of poly1, i + 1 index of poly1 MODULAR of poly1 length, j index of poly2, j + 1 index of poly2 length
+\*\* Imagine a rectangle with 4 points p0 to p3, p0 will connect to p1, p1 to p2, p2 to p3, but p3 to p0 will not connect because this is a for loop with a limit of poly1 length. As such the i + 1 will guarantee that connection from p3 to p4 but the modular operator will change p4 to p0 so p3 will connect to p0 --> this is how i understand it, could be wrong
+The touch variable is used in this function to take all segments of the first polygon and comparing against all segments of the second polygon
+After touch variable, if touch is true, return true --> meaning there is an intersection of polygons
+After the first for loop, return false --> meaning there is no intersection if code reaches here
+To test the code, back to car js, in car draw, set a condition if damaged is true, call fillStyle on ctx to gray
+Else, call fillStyle on ctx to black
+Whenever your car touches the border, it should change color to gray to indicate that it is 'damaged' and that the polysIntersection function is working with car as poly1 and border a poly2
+\*\* Note that when your car is slightly touching the border, it will not turn gray and this is because the line itself is very thin that is calculated by math and has no thickness, but the border we drew is manually drawn using javascript and we added lineWidth to it so the 'real' intersection does not happen until the car truly intersect pass the border which visually makes more sense(probably)
