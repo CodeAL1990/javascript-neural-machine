@@ -223,3 +223,46 @@ Whenever your car touches the border, it should change color to gray to indicate
 \*\* Note that when your car is slightly touching the border, it will not turn gray and this is because the line itself is very thin that is calculated by math and has no thickness, but the border we drew is manually drawn using javascript and we added lineWidth to it so the 'real' intersection does not happen until the car truly intersect pass the border which visually makes more sense(probably)
 In car update, set a condition if damaged is false(!damaged), move the code from #move till damaged inside the condition --> so if car is not damaged, allow it to move and such
 Now, your car should stop moving when it turns gray(gets damaged)
+We will now create other obstacles, in this case, other cars(to simulate traffic)
+In main js, initialize traffic and give it an array with a new instance of Car at a different y coordinate(so it will be above your original car)
+Then in animate, create a for loop with a limit of i less than traffic length and call update on i index traffic, passing in the required reference(place it before update call on car)
+Also, create another for loop with a limit of i less than traffic length before car draw, and call draw inside the loop on i index traffic
+Doing the above will make another car appear above your car but notice that you are now controlling the above car instead of the original
+This is because the key listeners for the car is being overwritten by the last car available in the i index traffic
+To fix this, we will need to specify which car should have controls enabled and which should not
+In main js car variable, pass in an additional parameter "KEYS"
+For the Car in traffic array, pass in "DUMMY"
+In Car js, pass in a new reference called controlType(to label the car KEYS or DUMMY)
+Then, pass controlType into the new instance of Controls in controls property
+In controls js, pass in type in the constructor
+Inside Controls, add a switch statement with type reference
+Inside the statement, for case "KEYS", call PRIVATE addKeyboardListeners on controls(this), break, then for case "DUMMY", just set forward to true
+Remove the previous PRIVATE addKeyBoardListeners(because it is now inside the switch statement)
+Now, you should see the DUMMY car move forward at maxSpeed as defined in your Car class, making it impossible for your car to ever catch up(because your car and the dummy car has the same speed, making you unable to test collision between cars)
+To vary the speeds, you can add maxSpeed as reference in your Car constructor and set it to 3, and convert maxSpeed to class property
+Back to main js, you can change maxSpeed reference value to let's say 2, which means your controlled car will have default 3 maxSpeed, making it possible to catch up to the dummy car(you can also set maxSpeed in your main js now in your Car instances)
+Currently, the sensors is unable to detect other cars and unable to be damaged by it, and also we do not want sensors on dummy cars too
+To disable sensors on dummy cars, in car js, add a condition where if controlType is not equal to DUMMY, then we instantiate a new instance of Sensor assigned to sensor property
+In Car update, you will also need to add a condition where if sensor is true, then call update on sensor
+And also the same condition in car draw, then call draw on sensor
+Your dummy car should be devoid of sensors now
+To allow the controlled car to collide with dummy car, pass traffic array to car update in animate
+Also, pass in an empty array to the for loop on traffic update instead of traffic (this is to prevent dummy car from colliding on itself if traffic array was passed instead, and in the future, will prevent dummy cars from colliding on each other and create road blockages --> although this will make it cooler but a hassle as you only want to test sensors on your self-driving car)
+In car js, you will need to pass traffic to car update as well
+Pass traffic in damaged in car update, sensor update in car update, PRIVATE assessDamage method
+Inside assessDamage, add a second for loop like your roadBorders for loop, but replace roadBorders limit with traffic instead
+Inside the polysIntersect method for traffic loop, replace i index roadBorders to i index traffic's polygon instead
+Now, when your controlled car collides on dummy car, it should turn gray, indicating it is damaged
+To let your sensors detect oncoming dummy cars, go to sensor js
+In sensor js, pass in traffic array to sensor update
+Inside the for loop in sensor update, in PRIVATE getReading method in the push method, pass in traffic reference as well
+Also pass it in the custom PRIVATE getReading method too
+Similar to the for loop for roadBorders in getReading, we will now have a second set of for loop for traffic using the same methology
+Create that second for loop with traffic instead, and assign poly to i index traffic's polygon(this is to prevent yourself from writing traffic[i].polygon everywhere)
+Then, inside that traffic loop, create a secondary for loop for j index(because we are now calculating collision between two polygons so we are using the extended segment intersection in utils js methodology), and call getIntersection method, assigned to value, passing in 0 index ray, 1 index ray, j index poly, and \*j + 1 MODULAR poly.length index poly --> Remember this? if not go back to utils to check it out
+Then, if value is true, push value into touches array
+The sensors should turn black when touching the dummy cars but since sensor turns black and the car is black it is hard to discern, so you should color the car differently
+Go to main js, pass in "red" in traffic draw in animate
+Then, pass "blue" in car draw in animate
+After the above, go to car js and pass in color reference to draw method, and inside the condition for non-damaged car fillStyle, set it to color reference
+Now, you should be able to see the sensor lines intersecting with the dummy cars more reliably
