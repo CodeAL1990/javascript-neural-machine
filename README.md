@@ -266,3 +266,26 @@ Go to main js, pass in "red" in traffic draw in animate
 Then, pass "blue" in car draw in animate
 After the above, go to car js and pass in color reference to draw method, and inside the condition for non-damaged car fillStyle, set it to color reference
 Now, you should be able to see the sensor lines intersecting with the dummy cars more reliably
+We will now implement one of the main points of this project, neural network, which will allow the car to detection oncoming collisions, and use the key listeners from controls to move out of the way
+Create new js file call network.js
+In network js, create Level class, passing in inputCount and outputCount references
+Convert inputCount to an instance of new Array assigned to inputs
+Do the same for outputCount for outputs
+Create biases property(a value above output which will fire off when it reaches that value), and assign a new instance of Array of outputCount to it
+Create weights property and give it an empty array
+Each input neuron will be connected to every output neuron
+So, after weights, create a for loop with a limit of i less than inputCount, and inside, assign i index of weights array to an instance of new Array of outputcount
+The above for loop is just a 'shell' that connects each input to each output and we will need to put actual values for them to actually function
+We will begin with a randomize version by calling a PRIVATE randomize method(not yet made) on Level in Level class properties, passing in the this keyword
+Inside Level, create a static PRIVATE randomize method, passing in level --> use static because author wants to \*serialize(no idea what it means yet) this object afterwards
+We will compare between level reference inputs length, and its outputs length using for loops and for each i and j index of weights array in level, we are assigning a randomized value between -1 and 1 (the negative value is there because there are 2 possible directions to turn when avoiding a frontal collision, left and right, and the negative value on for example, right, will 'warn' the car that right will cause collision as well, which will prompt the car to turn left )
+After the above, create another for loop for biases and randomizing the level reference i index biases between -1 and 1 as well
+We will now create a static feedForward method, passing in givenInputs and level references
+Inside it create a for loop with limit i less than level's inputs length, and assign each i index of inputs in level to i index of givenInputs
+Then, create another for loop with limit i less than level's outputs length
+Inside the second for loop, create sum variable assigned to 0(holder variable), and we are going to calculate the value of the inputs and the weights, which will be calculated and placed inside sum variable
+After initializing sum, create a for loop for j index, with limit of j less than level's inputs length
+Inside it, we are going to increment sum by j index inputs in level multiplied by j and i index weights in level
+After the above loop, check if sum is more than i index of biases in level, and if so, set i index of outputs in level to 1(on), if not, set it to 0(off)
+Then, return outputs of level
+The above code for randomize and feedForward represents the first level of the neural network
