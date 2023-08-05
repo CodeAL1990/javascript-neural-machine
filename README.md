@@ -289,3 +289,35 @@ Inside it, we are going to increment sum by j index inputs in level multiplied b
 After the above loop, check if sum is more than i index of biases in level, and if so, set i index of outputs in level to 1(on), if not, set it to 0(off)
 Then, return outputs of level
 The above code for randomize and feedForward represents the first level of the neural network
+\*\* The function used above is called a hyperplane equation, which is extrapolated from the basic line equation
+\*\* Line equation is weight(w) times sensor input(s) + bias(b) equals 0 (ws + b = 0). The weight controls the slope, while the bias controls the y axis, which as you know from above bounces between -1 to 1
+\*\* The plane equation, uses 2 sensors so it will be w0s0 + w1s1 + b = 0, representing 3d space
+\*\* The hyperplane equation, which we used, will include more than 3 sensors or more (w0s0 + w1s1 + w2s2 + wnsn... + b = 0), because with more than 3 sensors it is harder to visualize due to higher dimensions, but the math works all the same
+Back to network js, above Level class, define another class called NeuralNetwork, and pass in neuronCounts reference
+Inside NeuralNetwork, set levels property to an empty array which will be filled with levels defined in Level class(level 0, 1, 2 etc)
+To do the above, we will create a for loop, with a limit of i less than neuronCounts length minus 1 (\*this will be added back inside the for loop for each i index because we are only using the number 0 and 1)
+Inside the for loop, use push on levels array, pushing in an instance of new Level, passing in the required inputCount and outputCount references
+inputCount will be i index of neuronCounts, while outputCount will be i + 1 index of neuronCounts (\*number added back here)
+We will also need a static feedForward method for NeuralNetwork as well
+So, after the for loop, create static feedForward in NeuralNetwork, passing in givenInputs and network references
+Inside this new feedForward, get/set outputs to feedForward call on Level class, passing in givenInputs as reference, and index 0 levels array on network(first level)
+Then, we will use a for loop to loop through the remaining levels
+So, create a for loop with i assigned to 1 (because the first level is already created), and a limit of i less than network's levels' array length
+Inside the above for loop, each loop should set outputs to feedForward's call on Level, passing outputs, and i index of levels array of network
+Then, return outputs
+\*\* The above feedForward function is essentially putting in the output of the previous level, into the new level as the input. And the final outputs will tell us if the car should go which direction(wsad)
+Now, we want to connect/link the code inside network.js to our car object
+Inside car js, in the property where we defined sensor, set brain to an instance of new NeuralNetwork
+For the neuronCounts reference, we want to specify our array of neuronCounts, so pass in an array with sensor's rayCount, a hidden layer value of 6, and output layer of 4(signifying the 4 directions)
+In car update, after sensor update, set offsets to sensor's readings, and call map on readings, and for each sensor(or s), if it's null, return 0, else, return 1 minus s.offset
+\*\* The author is doing the above he wants neurons to receive low values if object is far away, and higher values close to 1 if object is close, kinda like a flashlight where the return light values are weak when pointing at a far object, and stronger return light values when the flashlight goes closer to the object. This is also how sensors work in practice
+Now, set/get outputs after the map method above, but calling feedForward on NeuralNetwork, passing in offsets variable, and brain property
+Console log outputs for now to check some values
+Currently, the car is not going forward because the 'brain' is not connected to the controls
+To allow the car to be 'self-controlled', back in main js, instead of "KEYS" in car, replace it with "AI"
+Then, in car js, define useBrain in Car property and assign it to a controlType where "AI" is true
+In car update, inside the sensor condition, set a condition where if useBrain is true, set controls' forward to index 0 outputs, controls' left to index 1 outputs, controls' right to index 2 outputs, and left, and reverse to their appropriate index, according to your Control constructor properties
+Now, your car should have an array of 4, each representing a direction, 0 meaning it's not pressed down, and 1 meaning it's active
+Refreshing your browser will randomize your controls, as defined by the PRIVATE randomized in Level, making your car go according to the directions being pressed
+The console log above do not really paint your picture and your car behaviour is still very random because we do not know what is happening
+Remove the console log and inside browser console, type car.brain to take a look at the properties of each iteration when refresh to get a better picture(but still confusing)
