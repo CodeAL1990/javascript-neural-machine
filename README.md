@@ -321,3 +321,14 @@ Now, your car should have an array of 4, each representing a direction, 0 meanin
 Refreshing your browser will randomize your controls, as defined by the PRIVATE randomized in Level, making your car go according to the directions being pressed
 The console log above do not really paint your picture and your car behaviour is still very random because we do not know what is happening
 Remove the console log and inside browser console, type car.brain to take a look at the properties of each iteration when refresh to get a better picture(but still confusing)
+To solve this 'confusion', it would be better if the network is present alongside the car, so we can better understand how each value is affecting the movement
+We will refactor canvas into two separate canvases, carCanvas and networkCanvas
+Go to your css file and do the necessary changes, applying contrasting background colors to both canvases
+Rename all canvas to carCanvas in main js, and ctx to carCtx
+Below carCanvas, create networkCanvas variable with the same assignment as carCanvas, but with networkCanvas, and change width to a value larger than carCanvas'
+Below carCtx, create networkCtx(same as carCtx)
+In animate, below carCanvas height, do the same for networkCanvas
+In your browser, you should see a separate canvas for your network with your appointed color
+Copy and paste the code for Visualizer into your utils or main js and call drawNetwork on Visualizer, passing in the required references of networkCtx, and car.brain(\* if you wanna know more, go to the author's visualise network video)
+To visualize it even better, pass in time in animate(which is an in-built frame per second from requestAnimationFrame, called deltaTime in your other projects), and call lineDashOffset on networkCtx, assigning it negative time divided by a value to slow down the animation(placing only time is too fast as it is like 60 frame per second)
+Doing the above would show you visually the direction the feedForward functions are heading
