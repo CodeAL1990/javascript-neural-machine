@@ -332,3 +332,37 @@ In your browser, you should see a separate canvas for your network with your app
 Copy and paste the code for Visualizer into your utils or main js and call drawNetwork on Visualizer, passing in the required references of networkCtx, and car.brain(\* if you wanna know more, go to the author's visualise network video)
 To visualize it even better, pass in time in animate(which is an in-built frame per second from requestAnimationFrame, called deltaTime in your other projects), and call lineDashOffset on networkCtx, assigning it negative time divided by a value to slow down the animation(placing only time is too fast as it is like 60 frame per second)
 Doing the above would show you visually the direction the feedForward functions are heading
+Now, we will generate multiple cars in parallel to test out the network(because testing it with 1 car is tedious)
+Above animate in main js, create custom method generateCars, passing N reference
+Assign cars variable to an empty array inside
+Then, create a for loop starting at i index of 1, and a limit of i less than or equal to N
+Inside the for loop, push an instance of new Car into cars array, passing in the same references as your original car
+Return cars array
+For your car variable in main js, change it to cars and assign it the custom method generateCars, with the N reference
+Then, set N variable before cars and set it to 100
+The idea here is that 100 cars is going to run simultaneously, and 1 of them is going to behave the way we want it to behave
+In animate, you will need to change car update and car draw since you are using cars array now
+For car update, replace it with a for loop, with a limit of cars array length, and inside it, call update on i index of cars array
+For car draw, also replace it with a for loop, with the same limit, and call draw on i index of cars array inside it
+The car variable inside translate and the reference for drawNetwork in animate will need to change as well
+We only need 1 car so just replace car with cars and 0 index for both, keeping the rest the same
+Checking your browser, you should have a 100 cars simultaneously going off, but you cannot really make anything out of it
+You can change the transparency of the 'parallel' cars with globalAlpha to see things better
+Before the for loop for cars draw, set globalAlpha of carCtx to 0.2, then set globalAlpha back to 1 after the for loop
+We want to emphasize 1 car, so let's take 0 index of cars for now and call draw on it after setting globalAlpha to 1
+Pass in the usual carCtx, "blue", with an additional true argument
+The additional argument is so that only this car will have sensor out of all the cars
+So, go to car js, and add an additional parameter in draw called drawSensor = false
+Inside car draw, add an AND operator in the condition for sensor, and add in drawSensor as a condition as well
+Inspecting your browser, you should notice that the car that has the sensors is not really the car that you want to look at as it is just one of the 100 random cars that you have put inside the canvas
+The one you want to follow is the car that is actively pursuing the other car while not crashing into it, and bypass it smoothly
+We will call this car the bestCar
+Inside main js animate method, after cars update, set bestCar and use find method on cars array, and for each car, find the car.y that has the minimum value(Math.min), of a spread of map of each car's y value in cars array --> \*\ The reason for doing this is because Math min does not work with arrays, only with numbers, and map method gives you an array of y values of each car, and spread will turn all these arrays into values
+With bestCar initialized, we will use it to replace all index 0 cars array(in translate, draw on index 0 cars, and index 0 cars on brain in drawNetwork)
+We will need to refresh multiple times to get a car like that(100 is not really much) so we should implement a save method on localStorage to store the bestCar that meets our expectation, and a discard method, if we need to discard it later down the road(pun not intended)
+Inside main js, before generateCars, set save method, and in it call setItem on localStorage, passing in "bestBrain", and a JSON.stringify on bestCar's brain
+Also, create a discard method, and call removeItem on localStorage on "bestBrain"
+These methods will not be able to 'read' what bestCar is since its a local scope inside animate, so you would have to set it at a global scope instead
+Set bestCar globally and assign it index 0 of cars array
+Then, set a condition where if getItem call on localStorage of "bestBrain" is true, set bestCar's brain to a JSON.parse of getItem call on localStorage of "bestBrain" (JSON parse is needed because localStorage only works with strings)
+Now we will like these save and discard methods to be used at a click of a button so we will need to create buttons in html ....TBC
