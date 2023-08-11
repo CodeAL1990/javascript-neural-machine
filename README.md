@@ -365,4 +365,36 @@ Also, create a discard method, and call removeItem on localStorage on "bestBrain
 These methods will not be able to 'read' what bestCar is since its a local scope inside animate, so you would have to set it at a global scope instead
 Set bestCar globally and assign it index 0 of cars array
 Then, set a condition where if getItem call on localStorage of "bestBrain" is true, set bestCar's brain to a JSON.parse of getItem call on localStorage of "bestBrain" (JSON parse is needed because localStorage only works with strings)
-Now we will like these save and discard methods to be used at a click of a button so we will need to create buttons in html ....TBC
+Now we will like these save and discard methods to be used at a click of a button so we will need to create buttons in html
+Set a div between the canvases and give it the id verticalButtons
+Inside the div, set 2 buttons with onclick save() and onclick discard()
+In CSS, we will now use flex display to move the icons
+In body, remove align text and set display to flex
+Then, justify content to center(horizontal), and align items to center(vertical)
+Add id verticalButtons to css and also set its display to flex
+Set its flex direction to column
+For button tag, set its border to none
+A border radius of 5px, padding of 5 5 7 5, margin of 2, and a pointer cursor
+Give the button:hover a background of blue
+With the above done, go to your browser and refresh till you get the car that sidestep the obstacle car and not crash onto the border, and you can click on the save icon to save it into localStorage
+Currently we are only using the y coordinate to determine which car we are tracking(bestCar), and for a non-linear road this would not be ideal
+The code inside bestCar is known as a fitness function, and its purpose is to try and find a function that best fit your objective(finding the ideal car to avoid collision), while also figuring out the edge cases and how to mitigate them(i.e if using distance as a metric a car going in circles will be an edge case)
+For now, let's add more traffic in lane 1(0), and lane 2
+Go to traffic array in main js and set two instances of DUMMY new Car at lane 0 and 2, with y coordinates of -300(further up) for both of them
+After trial and error-ing in your browser, the 'shaky' car is the car that is close to your ideal car but not quite because it cannot go past the second set of dummy cars
+Also, there is only one 'shaky' car at any given iteration and we would like more of these 'shaky' cars to increase a chances of one of them being able to pass the second set of dummy cars
+To achieve the above, we will now mutate the network
+In your NeuralNetwork class, create a static mutate method, passing in a network, and an amount assigned to 1 as parameters
+Inside the mutate method, we will first use a forEach method on levels array of network, and for each level, we are going to iterate(for loop), with a limit of i less than biases array of each level
+Inside the for loop, for i index biases of level, we are going to linear interpolate(lerp) between the current value of the bias(i index of biases of level), and a random value between -1 and 1, depending on amount(A + (B - A) times t)
+After the above iteration, we will iterate through the weights of each level(both i and j indexes), and for those i and j weights on each level, linear interpolate between the current value of the weights, and random value between -1 and 1, depending on amount
+The for loops above work similarly like your randomizer code but the mutate method will apply to the entire network due to the for loops
+How mutate works is if the amount parameter is 0, then everything stays the same, but if it is between -1 and 1, then it will move away from the biases depending on the value of the amount(this is where the mutation happens)
+Back in main js, for your condition of bestBrain, create a for loop inside with a limit of i less than cars length and move the JSON.parse code inside it but bestCar.brain will be cars[i].brain now
+If you test it out now, then all cars will be just that one 'shaky' car that sidesteps the first dummy car and crashes on the second set
+We will need a condition for all the other cars to not follow the current bestCar
+So, in the for loop above, set a condition where if i is not 0(not the current bestCar, which means all the other cars), we will call mutate on NeuralNetwork, and pass in the brain of i index cars , and an amount of 0.1 for now
+Once your bestCar passes the second set, we will need more traffic to test the car even more
+Back in traffic array, add like 4 more dummy cars at even further up on the y axis at the different lanes to complicate the road to test your car
+You can change N to a higher value so that you can iterate through more cars
+Remember to save the car that performed the best
