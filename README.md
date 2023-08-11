@@ -397,4 +397,5 @@ So, in the for loop above, set a condition where if i is not 0(not the current b
 Once your bestCar passes the second set, we will need more traffic to test the car even more
 Back in traffic array, add like 4 more dummy cars at even further up on the y axis at the different lanes to complicate the road to test your car
 You can change N to a higher value so that you can iterate through more cars
-Remember to save the car that performed the best
+Remember to save the car that performed the best so that the other cars will follow those biases that best performing car had
+The end?(Maybe)
